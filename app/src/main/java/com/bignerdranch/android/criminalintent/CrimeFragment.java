@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,13 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
+import java.util.Locale;
+
 
 public class CrimeFragment extends Fragment {
 
@@ -52,7 +60,13 @@ public class CrimeFragment extends Fragment {
 
         // sets date button text and disable it
         mDateButton = (Button) v.findViewById(R.id.crime_date);
-        mDateButton.setText(mCrime.getDate().toString());
+        // https://stackoverflow.com/questions/20527164/setting-application-locale-to-pt-br-programmatically
+        final Locale lc = new Locale("pt", "BR");
+        // https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html
+        // https://stackoverflow.com/questions/5121976/is-there-a-date-format-to-display-the-day-of-the-week-in-java
+        String dataCrime = new SimpleDateFormat("EEEE, dd/MM/yyyy").format(mCrime.getDate());
+
+        mDateButton.setText(dataCrime.toString());
         mDateButton.setEnabled(false);
 
         // get a reference and set a listener to update mSolved field of Crime
