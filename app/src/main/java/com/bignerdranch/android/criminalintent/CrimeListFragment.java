@@ -13,12 +13,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.List;
+import java.util.UUID;
 
 
 public class CrimeListFragment extends Fragment {
 
     private RecyclerView mCrimeRecyclerView;
     private CrimeAdapter mAdapter;
+    private static final int ARG_CRIME_ID_EDITED = -1;
+    private UUID mCrimeId;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -36,8 +39,24 @@ public class CrimeListFragment extends Fragment {
         CrimeLab crimeLab = CrimeLab.get(getActivity());
         List<Crime> crimes = crimeLab.getCrimes();
 
-        mAdapter = new CrimeAdapter(crimes);
-        mCrimeRecyclerView.setAdapter(mAdapter);
+        if (mAdapter == null){
+            mAdapter = new CrimeAdapter(crimes);
+            mCrimeRecyclerView.setAdapter(mAdapter);
+        } else {
+            if (mCrimeId != null) {
+                Crime cr = crimeLab.getCrime(mCrimeId);
+                int i = crimes.indexOf(cr);
+                if (i != -1) {
+                    mAdapter.notifyItemChanged(i);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        updateUi();
     }
 
     private class CrimeHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -66,7 +85,9 @@ public class CrimeListFragment extends Fragment {
         @Override
         public void onClick(View v){
             Intent intent = CrimeActivity.newIntent(getActivity(), mCrime.getId());
+            mCrimeId = mCrime.getId();
             startActivity(intent);
+//            startActivityForResult(intent, ARG_CRIME_ID_EDITED);
         }
     }
 
